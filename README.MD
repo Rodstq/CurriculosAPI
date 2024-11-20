@@ -1,6 +1,7 @@
 # 1 Lista de consultas no database
 
 ´´´yaml
+
     SELECT ID, Nome, Cargo, Descricao, CNPJ 
     FROM Vaga
     WHERE Aprovado = TRUE;
