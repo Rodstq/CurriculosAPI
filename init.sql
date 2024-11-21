@@ -2,7 +2,8 @@ CREATE TABLE Usuario (
     CPF CHAR(11) NOT NULL PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Telefone CHAR(11) NOT NULL,
-    Formacao VARCHAR(255) NOT NULL
+    Formacao VARCHAR(255) NOT NULL,
+    TipoUsuario ENUM('COMUM', 'ADMIN') DEFAULT 'COMUM' NOT NULL
 );
 
 CREATE TABLE Empresa (
@@ -33,11 +34,35 @@ CREATE TABLE Inscricao (
     FOREIGN KEY (VagaID) REFERENCES Vaga(ID)
 );
 
-INSERT INTO Usuario (CPF, Nome, Telefone, Formacao)
+CREATE TABLE Administrador (
+    CPF CHAR(11) NOT NULL PRIMARY KEY,
+    Nome VARCHAR(255) NOT NULL,
+    Telefone CHAR(11) NOT NULL,
+    TipoUsuario ENUM('COMUM', 'ADMIN') DEFAULT 'ADMIN' NOT NULL,
+    FOREIGN KEY (CPF) REFERENCES Usuario(CPF)
+);
+
+CREATE USER admin_user WITH PASSWORD 'admin_password';
+
+CREATE USER common_user WITH PASSWORD 'common_password';
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_user;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO common_user;
+
+REVOKE INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public FROM common_user;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO admin_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO common_user;
+
+
+INSERT INTO Usuario (CPF, Nome, Telefone, Formacao, TipoUsuario)
 VALUES
-('12345678901', 'João Silva', '11987654321', 'Engenharia de Software'),
-('98765432100', 'Maria Oliveira', '21987654321', 'Administração'),
-('45678912300', 'Pedro Santos', '31987654321', 'Ciências Contábeis');
+('12345678901', 'João Silva', '11987654321', 'Engenharia de Software','COMUM'),
+('12345678901', 'Reinaldo Pereira', '11987654321', 'Engenharia', 'COMUM'),
+('98765432109', 'Maria Souza', '21987654321', 'Administração', 'ADMIN'),
+('98765432109', 'Jadson Lima', '21987654321','Gerente', 'ADMIN');
+
 
 INSERT INTO Empresa (CNPJ, Nome, Telefone, Ramo)
 VALUES
